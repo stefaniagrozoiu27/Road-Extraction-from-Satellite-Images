@@ -120,8 +120,6 @@ for img_name, mask_name in zip(train_images, train_masks):
     # OpenCV folosește BGR
     # Matplotlib, TensorFlow, CNN-urile se așteaptă la RGB
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    # fiecare pixel devine float
-    # interval: 0.0 – 1.0
     img = img / 255.0
 
 
@@ -230,7 +228,6 @@ from tensorflow.keras.models import Model
 
 inputs = Input(shape=(32, 32, 3))
 
-# ===== Encoder =====
 c1 = Conv2D(16, (3,3), activation='relu', padding='same')(inputs)
 c1 = Conv2D(16, (3,3), activation='relu', padding='same')(c1)
 p1 = MaxPooling2D(2)(c1)   # 16x16
@@ -239,11 +236,9 @@ c2 = Conv2D(32, (3,3), activation='relu', padding='same')(p1)
 c2 = Conv2D(32, (3,3), activation='relu', padding='same')(c2)
 p2 = MaxPooling2D(2)(c2)   # 8x8
 
-# ===== Bottleneck =====
 b = Conv2D(64, (3,3), activation='relu', padding='same')(p2)
 b = Conv2D(64, (3,3), activation='relu', padding='same')(b)
 
-# ===== Decoder =====
 u1 = UpSampling2D(2)(b)    # 16x16
 u1 = Concatenate()([u1, c2])
 d1 = Conv2D(32, (3,3), activation='relu', padding='same')(u1)
@@ -252,7 +247,6 @@ u2 = UpSampling2D(2)(d1)   # 32x32
 u2 = Concatenate()([u2, c1])
 d2 = Conv2D(16, (3,3), activation='relu', padding='same')(u2)
 
-# ===== Feature head (pentru SVM) =====
 f = Flatten()(d2)
 f = Dense(128, activation='relu')(f)
 f = Dropout(0.5)(f)
